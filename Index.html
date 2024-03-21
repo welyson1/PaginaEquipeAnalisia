@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Example</title>
+</head>
+<body>
+    <h1>Dados da Planilha</h1>
+    <table id="dataTable" border="1">
+        <!-- Os dados da planilha serão inseridos aqui -->
+    </table>
+
+    <script>
+        // Função para carregar os dados da planilha do Google
+        async function loadSheet() {
+            try {
+                // URL da planilha do Google no formato CSV
+                var sheetUrl = 'https://docs.google.com/spreadsheets/d/1ErWT-8-S5-0KcTUIEcvWiUz74FxPoIAY4pk1TzK_J98/export?format=csv'; // Substitua SUA_ID_DA_PLANILHA pela ID da sua planilha
+
+                // Fazer solicitação HTTP para recuperar os dados da planilha
+                var response = await fetch(sheetUrl);
+                var data = await response.text();
+
+                // Converter os dados CSV para uma matriz de linhas
+                var rows = data.split('\n').map(row => row.split(','));
+
+                // Limpar a tabela antes de adicionar novos dados
+                var table = document.getElementById('dataTable');
+                table.innerHTML = '';
+
+                // Adicionar os dados na tabela HTML
+                rows.forEach(function(row) {
+                    var tr = document.createElement('tr');
+                    row.forEach(function(cell) {
+                        var td = document.createElement('td');
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar os dados da planilha:', error);
+            }
+        }
+
+        // Chamar a função para carregar os dados da planilha quando a página for carregada
+        window.onload = loadSheet;
+    </script>
+</body>
+</html>
