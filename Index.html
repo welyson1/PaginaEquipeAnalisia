@@ -1,17 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="Style.css">
     <title>Google Sheets Example</title>
 </head>
+
 <body>
-    <h1>Dados da Planilha</h1>
-    <table id="dataTable" border="1">
+    <h1>Equipe</h1>
+    <div id="dataContainer">
         <!-- Os dados da planilha serão inseridos aqui -->
-    </table>
+    </div>
 
     <script>
+        //Lista de URLs das imagens no Google Drive
+        var imageUrls = [
+            '/Avatares/_5ae0a307-901b-4bb4-a1f5-38f5cd34b10a.jpg',
+            '/Avatares/_5c788202-1e38-481d-8b0f-b24eb5f886f6.jpg',
+            '/Avatares/_22d31ae4-41da-4683-9da4-1b17b2ee4809.jpg',
+            '/Avatares/_0024273c-4efc-4b1c-bc78-689e8f13bafe.jpg',
+            '/Avatares/Gemini_Generated_Image (5).jpg',
+            '/Avatares/Gemini_Generated_Image (6).jpg',
+            '/Avatares/Gemini_Generated_Image (7).jpg',
+            '/Avatares/Gemini_Generated_Image (8).jpg',
+            '/Avatares/Gemini_Generated_Image (9).jpg',
+            '/Avatares/Gemini_Generated_Image (10).jpg',
+            '/Avatares/Gemini_Generated_Image (11).jpg',
+            '/Avatares/Gemini_Generated_Image (12).jpg',
+            '/Avatares/Gemini_Generated_Image (13).jpg',
+            '/Avatares/Gemini_Generated_Image (14).jpg',
+            '/Avatares/Gemini_Generated_Image (15).jpg',
+            '/Avatares/Gemini_Generated_Image (16).jpg',
+            '/Avatares/Gemini_Generated_Image (17).jpg',
+            '/Avatares/Gemini_Generated_Image (18).jpg',
+            '/Avatares/Gemini_Generated_Image (19).jpg',
+        ];
+
         // Função para carregar os dados da planilha do Google
         async function loadSheet() {
             try {
@@ -25,27 +52,78 @@
                 // Converter os dados CSV para uma matriz de linhas
                 var rows = data.split('\n').map(row => row.split(','));
 
-                // Limpar a tabela antes de adicionar novos dados
-                var table = document.getElementById('dataTable');
-                table.innerHTML = '';
+                // Limpar antes de adicionar novos dados
+                var container = document.getElementById('dataContainer');
+                container.innerHTML = '';
 
-                // Adicionar os dados na tabela HTML
-                rows.forEach(function(row) {
-                    var tr = document.createElement('tr');
-                    row.forEach(function(cell) {
-                        var td = document.createElement('td');
-                        td.textContent = cell;
-                        tr.appendChild(td);
-                    });
-                    table.appendChild(tr);
-                });
+                // Adicionar os dados na div
+                //Começar do índice 1 para pular a primeira linha (títulos das colunas)
+                for (var i = 1; i < rows.length; i++) {
+                    var row = rows[i];
+                    var status = row[3]; //Indice da coluna de status
+                    if (status === 'Ativo') {
+                        var div = document.createElement('div');
+                        div.className = 'card';
+                        //Começar do índice 1 para pular a primeira coluna (RA)
+                        for (var j = 1; j < row.length; j++) {
+                            //Ignorar a coluna "Ativo"
+                            if (j == 3) continue;
+                            var cell = row[j];
+                            //Se for a coluna do cargo, remover o número da frente
+                            if (j == 2) {
+                                cell = cell.split(' ').slice(1).join(' ');
+                            }
+                            //Se for a coluna social, criar links com ícones
+                            if (j == 4) {
+                                var socialLinks = cell.split(';');
+                                socialLinks.forEach(link => {
+                                    var socialIcon = getSocialIcon(link);
+                                    if (socialIcon) {
+                                        var socialAnchor = document.createElement('a');
+                                        socialAnchor.href = link;
+                                        socialAnchor.target = "_blank";
+                                        var icon = document.createElement('i');
+                                        icon.className = socialIcon;
+                                        socialAnchor.appendChild(icon);
+                                        div.appendChild(socialAnchor);
+                                    }
+                                });
+                            } else {
+                                var p = document.createElement('p');
+                                p.textContent = cell;
+                                div.appendChild(p);
+                            }
+                            //Adicionar imagem aqui, após o nome e antes do cargo
+                            if (j == 1) {
+                                var img = document.createElement('img');
+                                img.src = imageUrls[Math.floor(Math.random() * imageUrls.length)]; //Seleciona imagem aleatória
+                                div.appendChild(img);
+                            }
+                        }
+                        container.appendChild(div);
+                    }
+                }
             } catch (error) {
                 console.error('Erro ao carregar os dados da planilha:', error);
             }
+        }
+
+        function getSocialIcon(link) {
+            if (link.includes('linkedin.com')) {
+                return 'fab fa-linkedin';
+            } else if (link.includes('instagram.com')) {
+                return 'fab fa-instagram';
+            } else if (link.startsWith('@')) {
+                return 'fab fa-instagram';
+            } else if (link.includes('github.com')) {
+                return 'fab fa-github';
+            }
+            return null;
         }
 
         // Chamar a função para carregar os dados da planilha quando a página for carregada
         window.onload = loadSheet;
     </script>
 </body>
+
 </html>
